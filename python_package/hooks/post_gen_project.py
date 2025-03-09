@@ -7,8 +7,9 @@ def main() -> int:
     license = r"{{ cookiecutter.license }}"
     if license != "None":
         source_file = (
-            Path(r"{{ cookiecutter._template }}").resolve().parent.parent
-            / "LICENSES"
+            Path(r"{{ cookiecutter._repo_dir }}").resolve().parent
+            / ".shared"
+            / "Licenses"
             / r"{{ cookiecutter.license }}.txt"
         )
         destination_file = Path().resolve() / "LICENSE"
