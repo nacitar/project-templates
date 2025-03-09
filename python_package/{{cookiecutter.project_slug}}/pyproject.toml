@@ -1,0 +1,41 @@
+[project]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.project_description }}"
+authors = [
+    {name = "{{ cookiecutter.author }}",email = "{{ cookiecutter.email }}"}
+]
+readme = "README.md"
+license = "{{ cookiecutter.license }}"
+requires-python = ">={{ cookiecutter.python_version }}"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "{{ cookiecutter.project_slug }}", from = "src"}]
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+flake8 = "^7.1.2"
+isort = "^6.0.1"
+mypy = "^1.15.0"
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = {{ cookiecutter.max_line_length }}
+skip-magic-trailing-comma = true
+
+[tool.isort]
+line_length = {{ cookiecutter.max_line_length }}
+profile = "black"
+
+[tool.mypy]
+strict = true
+
+[tool.poetry.scripts]
+app = "{{ cookiecutter.project_slug }}.__main__:main"
+checks = "{{ cookiecutter.project_slug }}.devtools.checks:main"
