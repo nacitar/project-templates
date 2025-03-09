@@ -9,7 +9,7 @@ def main() -> int:
         source_file = (
             Path(r"{{ cookiecutter._repo_dir }}").resolve().parent
             / ".shared"
-            / "Licenses"
+            / "licenses"
             / r"{{ cookiecutter.license }}.txt"
         )
         destination_file = Path().resolve() / "LICENSE"
