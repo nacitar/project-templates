@@ -54,7 +54,7 @@ def setup_logging(
         style="{",
         format=(
             "[{asctime:s}.{msecs:03.0f}]"
-            " [{module:s}] {levelname:>8s}: {message:s}"
+            " [{module:s}] {levelname:s}: {message:s}"
         ),
         datefmt="%Y-%m-%d %H:%M:%S",
         level=global_level,
