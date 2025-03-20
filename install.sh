@@ -13,7 +13,7 @@ for directory in "${SCRIPT_DIR}/"*/; do
         continue
     fi
 
-    symlink="${HOME}/.cookiecutters/ns_${name}"
+    symlink="${HOME}/.cookiecutters/ns-${name}"
 
     rm -f "${symlink}"
     if [[ -z ${remove} ]]; then
