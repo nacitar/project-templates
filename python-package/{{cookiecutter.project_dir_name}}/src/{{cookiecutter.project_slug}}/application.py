@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Sequence
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -112,5 +112,5 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
 
-    LOG.warning("application code goes here!")
+    logger.warning("application code goes here!")
     return 0
