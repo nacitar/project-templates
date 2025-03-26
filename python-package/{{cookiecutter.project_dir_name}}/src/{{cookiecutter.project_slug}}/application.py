@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import time
 from dataclasses import KW_ONLY, dataclass
 from logging import Handler
 from logging.handlers import RotatingFileHandler
@@ -14,11 +13,11 @@ LOG = logging.getLogger(__name__)
 
 @dataclass
 class LogFileOptions:
-    path: str | Path
+    path: Path
     _ = KW_ONLY
     max_kb: int
     backup_count: int
-    level: int = logging.INFO
+    level: int = logging.DEBUG
     encoding: str = "utf-8"
     append: bool = True
 
@@ -34,78 +33,83 @@ class LogFileOptions:
         return handler
 
 
-def setup_logging(
-    *,
-    console_level: int = logging.WARNING,
-    file_options: LogFileOptions | None = None,
-    utc: bool = False,
+def configure_logging(
+    console_level: int, log_file_options: LogFileOptions | None = None
 ) -> None:
+    logging.getLogger().handlers = []
     console_handler = logging.StreamHandler()
     console_handler.setLevel(console_level)
-    handlers: list[logging.Handler] = [console_handler]
-    message = "logging configured"
-    if file_options:
-        handlers.append(file_options.create_handler())
-        global_level = min(console_level, file_options.level)
-        message += f", logging to file: {Path(file_options.path).resolve()}"
-    else:
-        global_level = console_level
-    logging.basicConfig(
-        style="{",
-        format=(
-            "[{asctime:s}.{msecs:03.0f}]"
-            " [{module:s}] {levelname:s}: {message:s}"
-        ),
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=global_level,
-        handlers=handlers,
+    console_handler.setFormatter(
+        logging.Formatter(fmt="{levelname:s}: {message:s}", style="{")
     )
-    if utc:
-        logging.Formatter.converter = time.gmtime
-    LOG.info(message)
+    logging.getLogger().addHandler(console_handler)
+    global_level = console_level
+    if log_file_options:
+        global_level = min(global_level, log_file_options.level)
+        file_handler = log_file_options.create_handler()
+        file_handler.setFormatter(
+            logging.Formatter(
+                fmt=(
+                    "[{asctime:s}.{msecs:03.0f}]"
+                    " [{levelname:s}] {module:s}: {message:s}"
+                ),
+                datefmt="%Y-%m-%d %H:%M:%S",
+                style="{",
+            )
+        )
+        logging.getLogger().addHandler(file_handler)
+    logging.getLogger().setLevel(global_level)
+    logging.info("logging configured")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Does something.")
-    parser.add_argument(
-        "--log-path",
-        type=str,
-        help="Path to the log file to be written.",
-        default="",
+    log_group = parser.add_argument_group("logging")
+    log_group.add_argument(
+        "--log-file",
+        metavar="FILE",
+        help="Path to a file where logs will be written, if specified.",
     )
-    loglevel_group = parser.add_mutually_exclusive_group(required=False)
-    loglevel_group.add_argument(
+    log_verbosity_group = log_group.add_mutually_exclusive_group(
+        required=False
+    )
+    log_verbosity_group.add_argument(
         "-v",
         "--verbose",
-        action="store_true",
-        help="Increase log verbosity to INFO for console.",
+        action="store_const",
+        dest="console_level",
+        const=logging.INFO,
+        help="Increase console log level to INFO.",
     )
-    loglevel_group.add_argument(
-        "-d",
+    log_verbosity_group.add_argument(
+        "-q",
+        "--quiet",
+        action="store_const",
+        dest="console_level",
+        const=logging.ERROR,
+        help="Decrease console log level to ERROR.  Overrides -v.",
+    )
+    log_verbosity_group.add_argument(
         "--debug",
-        action="store_true",
-        help="Increase log verbosity to DEBUG for console and log file.",
+        action="store_const",
+        dest="console_level",
+        const=logging.DEBUG,
+        help="Maximizes console log verbosity to DEBUG.  Overrides -v and -q.",
     )
     args = parser.parse_args(args=argv)
 
-    setup_logging(
-        console_level=(
-            logging.DEBUG
-            if args.debug
-            else logging.INFO if args.verbose else logging.WARNING
-        ),
-        file_options=(
+    configure_logging(
+        console_level=args.console_level or logging.WARNING,
+        log_file_options=(
             None
-            if not args.log_path
+            if not args.log_file
             else LogFileOptions(
-                path=args.log_path,
+                path=Path(args.log_file),
                 max_kb=512,  # 0 for unbounded size and no rotation
                 backup_count=1,  # 0 for no rolling backups
-                level=logging.DEBUG if args.debug else logging.INFO,
                 # append=False
             )
         ),
-        # utc=True
     )
 
     LOG.warning("application code goes here!")
