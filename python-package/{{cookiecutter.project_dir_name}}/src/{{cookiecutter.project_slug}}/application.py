@@ -36,12 +36,22 @@ class LogFileOptions:
 def configure_logging(
     console_level: int, log_file_options: LogFileOptions | None = None
 ) -> None:
+    class SuppressConsoleOutputFor__main__(logging.Filter):
+        def __init__(self) -> None:
+            super().__init__()
+
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.name != (
+                f"{__package__}.__main__" if __package__ else "__main__"
+            )
+
     logging.getLogger().handlers = []
     console_handler = logging.StreamHandler()
     console_handler.setLevel(console_level)
     console_handler.setFormatter(
         logging.Formatter(fmt="{levelname:s}: {message:s}", style="{")
     )
+    console_handler.addFilter(SuppressConsoleOutputFor__main__())
     logging.getLogger().addHandler(console_handler)
     global_level = console_level
     if log_file_options:
