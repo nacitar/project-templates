@@ -8,13 +8,7 @@ mkdir -p "${HOME}/.cookiecutters"
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
 for directory in "${SCRIPT_DIR}/"*/; do
-    name=$(basename "${directory}")
-    if [[ ${name} == "SHARED" ]]; then
-        continue
-    fi
-
-    symlink="${HOME}/.cookiecutters/ns-${name}"
-
+    symlink="${HOME}/.cookiecutters/ns-$(basename "${directory}")"
     rm -f "${symlink}"
     if [[ -z ${remove} ]]; then
         ln -sf "${directory}" "${symlink}"
