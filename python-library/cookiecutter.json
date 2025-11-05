@@ -1,10 +1,10 @@
 {
     "author": "Your Name",
     "email": "your.email@example.com",
-    "project_name": "My Python Package",
+    "project_name": "My Python Library",
     "project_dir_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
     "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
-    "project_description": "A new Python package with logging and linters.",
+    "project_description": "A Python library.",
     "license": [
         "None", "Unlicense", "Apache-2.0", "GPL-3.0-only", "MIT",
         "BSD-2-Clause", "BSD-3-Clause", "BSL-1.0", "CC0-1.0", "EPL-2.0",

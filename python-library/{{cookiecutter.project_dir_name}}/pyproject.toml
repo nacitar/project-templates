@@ -37,7 +37,3 @@ profile = "black"
 
 [tool.mypy]
 strict = true
-
-[tool.poetry.scripts]
-app = "{{ cookiecutter.project_slug }}.__main__:main"
-checks = "{{ cookiecutter.project_slug }}.devtools.checks:main"
