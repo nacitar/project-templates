@@ -2,7 +2,7 @@
     "author": "Your Name",
     "email": "your.email@example.com",
     "project_name": "My Python Library",
-    "project_dir_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+    "binary_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
     "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
     "project_description": "A Python library.",
     "license": [

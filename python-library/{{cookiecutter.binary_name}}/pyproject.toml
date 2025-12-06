@@ -1,5 +1,5 @@
 [project]
-name = "{{ cookiecutter.project_slug }}"
+name = "{{ cookiecutter.binary_name }}"
 version = "0.1.0"
 description = "{{ cookiecutter.project_description }}"
 authors = [
@@ -37,9 +37,6 @@ profile = "black"
 
 [tool.mypy]
 strict = true
-
-[tool.poetry.scripts]
-{{ cookiecutter.binary_name }} = "{{ cookiecutter.project_slug }}.__main__:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
