@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.metadata
 import logging
 from dataclasses import KW_ONLY, dataclass
 from logging import Handler
@@ -73,7 +74,9 @@ def configure_logging(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Does something.")
+    parser = argparse.ArgumentParser(
+        description=importlib.metadata.metadata(__package__).get("summary")
+    )
     log_group = parser.add_argument_group("logging")
     log_group.add_argument(
         "--log-file",
