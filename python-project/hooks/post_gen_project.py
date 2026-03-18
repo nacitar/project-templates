@@ -3,6 +3,11 @@ from pathlib import Path
 from string import Template
 
 
+def remove_file(path: Path) -> None:
+    if path.exists():
+        path.unlink()
+
+
 def main() -> int:
     license = r"{{ cookiecutter.license }}"
     if license != "None":
@@ -20,6 +25,11 @@ def main() -> int:
                 author=r"{{ cookiecutter.author }}",
             )
         )
+    project_type = r"{{ cookiecutter.project_type }}"
+    if project_type == "library":
+        package_path = Path("src") / r"{{ cookiecutter.project_slug }}"
+        remove_file(package_path / "__main__.py")
+        remove_file(package_path / "application.py")
     return 0
 
 

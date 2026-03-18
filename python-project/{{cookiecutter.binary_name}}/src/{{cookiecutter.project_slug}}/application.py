@@ -4,7 +4,6 @@ import argparse
 import importlib.metadata
 import logging
 from dataclasses import KW_ONLY, dataclass
-from typing import TYPE_CHECKING
 from logging import Handler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -71,7 +70,6 @@ def configure_logging(
         logging.getLogger().addHandler(file_handler)
     logging.getLogger().setLevel(global_level)
     logger.info("logging configured")
-
 
 
 def main(argv: Sequence[str] | None = None) -> int:
