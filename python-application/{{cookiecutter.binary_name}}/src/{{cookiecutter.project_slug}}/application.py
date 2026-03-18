@@ -4,10 +4,14 @@ import argparse
 import importlib.metadata
 import logging
 from dataclasses import KW_ONLY, dataclass
+from typing import TYPE_CHECKING
 from logging import Handler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -37,14 +41,9 @@ class LogFileOptions:
 def configure_logging(
     console_level: int, log_file_options: LogFileOptions | None = None
 ) -> None:
-    class SuppressConsoleOutputFor__main__(logging.Filter):
-        def __init__(self) -> None:
-            super().__init__()
-
+    class SuppressFileOnly(logging.Filter):
         def filter(self, record: logging.LogRecord) -> bool:
-            return record.name != (
-                f"{__package__}.__main__" if __package__ else "__main__"
-            )
+            return not getattr(record, "file_only", False)
 
     logging.getLogger().handlers = []
     console_handler = logging.StreamHandler()
@@ -52,9 +51,10 @@ def configure_logging(
     console_handler.setFormatter(
         logging.Formatter(fmt="{levelname:s}: {message:s}", style="{")
     )
-    console_handler.addFilter(SuppressConsoleOutputFor__main__())
+    console_handler.addFilter(SuppressFileOnly())
     logging.getLogger().addHandler(console_handler)
     global_level = console_level
+
     if log_file_options:
         global_level = min(global_level, log_file_options.level)
         file_handler = log_file_options.create_handler()
@@ -70,7 +70,8 @@ def configure_logging(
         )
         logging.getLogger().addHandler(file_handler)
     logging.getLogger().setLevel(global_level)
-    logging.info("logging configured")
+    logger.info("logging configured")
+
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -120,7 +121,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 path=Path(args.log_file),
                 max_kb=512,  # 0 for unbounded size and no rotation
                 backup_count=1,  # 0 for no rolling backups
-                # append=False
             )
         ),
     )

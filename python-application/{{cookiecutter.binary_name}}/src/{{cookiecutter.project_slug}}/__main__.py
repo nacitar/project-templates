@@ -1,20 +1,18 @@
 import logging
-import sys
+from collections.abc import Sequence
 
 from .application import main as application_main
 
-# Given application.configure_logging(), will only log to file because
-# uncaught exceptions provide perfectly sufficient console output.
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
+def main(argv: Sequence[str] | None = None) -> int:
     try:
-        sys.exit(application_main())
-    except Exception as e:
-        logger.exception(str(e))
+        return application_main(argv)
+    except Exception:
+        logger.exception("uncaught exception", extra={"file_only": True})
         raise
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
